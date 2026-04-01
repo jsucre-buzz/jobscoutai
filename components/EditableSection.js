@@ -1,234 +1,136 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
-function CopyButton({ text, lang }) {
+function CopyBtn({ text }) {
   const [copied, setCopied] = useState(false);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback for older browsers
-      const el = document.createElement('textarea');
-      el.value = text;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+  async function copy() {
+    try { await navigator.clipboard.writeText(text); }
+    catch { const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); }
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
   }
-
   return (
-    <button onClick={handleCopy} style={{
-      fontFamily: 'var(--font-mono)', fontSize: 11,
-      padding: '4px 10px', borderRadius: 4,
-      border: `1px solid ${copied ? 'var(--green)' : 'var(--border-bright)'}`,
-      background: copied ? 'var(--green)' : 'transparent',
-      color: copied ? 'var(--bg)' : 'var(--text-muted)',
-      cursor: 'pointer', transition: 'all 0.2s ease',
-      display: 'flex', alignItems: 'center', gap: 5,
+    <button onClick={copy} style={{
+      fontFamily: 'var(--font-mono)', fontSize: 11, padding: '4px 10px',
+      borderRadius: 6, border: `1px solid ${copied ? 'var(--accent)' : 'var(--border-bright)'}`,
+      background: copied ? 'var(--accent)' : 'transparent',
+      color: copied ? '#fff' : 'var(--text-muted)',
+      cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 4,
     }}>
-      {copied ? '✓' : '⎘'} {copied ? (lang === 'de' ? 'Kopiert!' : 'Copied!') : (lang === 'de' ? 'Kopieren' : 'Copy')}
+      {copied ? '✓ Kopiert' : '⎘ Kopieren'}
     </button>
   );
 }
 
-function ActionButton({ onClick, loading, icon, label, color = 'var(--text-muted)', borderColor = 'var(--border-bright)' }) {
+function ActionBtn({ onClick, loading, icon, label, color }) {
   return (
     <button onClick={onClick} disabled={loading} style={{
-      fontFamily: 'var(--font-mono)', fontSize: 11,
-      padding: '4px 10px', borderRadius: 4,
-      border: `1px solid ${borderColor}`,
-      background: 'transparent',
-      color: loading ? 'var(--text-dim)' : color,
-      cursor: loading ? 'not-allowed' : 'pointer',
-      display: 'flex', alignItems: 'center', gap: 5,
-      opacity: loading ? 0.5 : 1,
-      transition: 'all 0.15s ease',
+      fontFamily: 'var(--font-mono)', fontSize: 11, padding: '4px 10px',
+      borderRadius: 6, border: `1px solid ${color}44`,
+      background: 'transparent', color: loading ? 'var(--text-dim)' : color,
+      cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+      opacity: loading ? 0.5 : 1, transition: 'all 0.15s',
     }}
-      onMouseEnter={e => { if (!loading) e.currentTarget.style.borderColor = color; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = borderColor; }}
+      onMouseEnter={e => { if (!loading) e.currentTarget.style.background = `${color}12`; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
-      {loading ? <span style={{ animation: 'spin 0.8s linear infinite', display: 'inline-block' }}>↻</span> : icon} {label}
+      {loading ? <span style={{ animation: 'spin 0.8s linear infinite', display: 'inline-block' }}>↻</span> : icon}
+      {label}
     </button>
   );
 }
 
-export default function EditableSection({
-  title, icon, content, onContentChange,
-  onRegenerate, onSimplify,
-  lang = 'de', isQA = false, loading = false,
-}) {
-  const [sectionLoading, setSectionLoading] = useState(false);
-  const textareaRef = useRef(null);
+export default function EditableSection({ title, icon, content, onContentChange, onRegenerate, onSimplify, isQA = false }) {
+  const [busy, setBusy] = useState(false);
 
-  async function handleRegen() {
-    if (!onRegenerate) return;
-    setSectionLoading(true);
-    await onRegenerate();
-    setSectionLoading(false);
-  }
+  async function regen() { if (!onRegenerate) return; setBusy(true); await onRegenerate(); setBusy(false); }
+  async function simplify() { if (!onSimplify) return; setBusy(true); await onSimplify(); setBusy(false); }
 
-  async function handleSimplify() {
-    if (!onSimplify) return;
-    setSectionLoading(true);
-    await onSimplify();
-    setSectionLoading(false);
-  }
+  const cardStyle = {
+    background: 'var(--bg-2)', border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-lg)', overflow: 'hidden',
+    boxShadow: 'var(--shadow)', animation: 'fadeIn 0.4s ease',
+    opacity: busy ? 0.7 : 1, transition: 'opacity 0.2s',
+  };
+  const headerStyle = {
+    padding: '13px 18px', borderBottom: '1px solid var(--border)',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    flexWrap: 'wrap', gap: 8, background: 'var(--bg-3)',
+  };
+  const titleStyle = {
+    display: 'flex', alignItems: 'center', gap: 8,
+    fontSize: 14, fontWeight: 600, color: 'var(--text)',
+  };
 
-  // For Q&A: render list of editable pairs
   if (isQA && Array.isArray(content)) {
     return (
-      <div style={{
-        background: 'var(--bg-2)', border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-        animation: 'fadeIn 0.4s ease',
-      }}>
-        <div style={{
-          padding: '14px 18px', borderBottom: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 8,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16 }}>{icon}</span>
-            <span style={{ fontWeight: 600, fontSize: 14 }}>{title}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <CopyButton text={content.map((qa, i) => `Q${i+1}: ${qa.question}\nA: ${qa.answer}`).join('\n\n')} lang={lang} />
-            {onRegenerate && (
-              <ActionButton onClick={handleRegen} loading={sectionLoading}
-                icon="↺" label={lang === 'de' ? 'Neu' : 'Regen'} />
-            )}
+      <div style={cardStyle}>
+        <div style={headerStyle}>
+          <div style={titleStyle}><span>{icon}</span>{title}</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <CopyBtn text={content.map((qa, i) => `F${i+1}: ${qa.question}\nA: ${qa.answer}`).join('\n\n')} />
+            {onRegenerate && <ActionBtn onClick={regen} loading={busy} icon="↺" label="Neu" color="var(--accent)" />}
           </div>
         </div>
-        <div style={{ padding: '0' }}>
-          {content.map((qa, i) => (
-            <div key={i} style={{
-              padding: '16px 18px',
-              borderBottom: i < content.length - 1 ? '1px solid var(--border)' : 'none',
+        {content.map((qa, i) => (
+          <div key={i} style={{
+            padding: '16px 18px',
+            borderBottom: i < content.length - 1 ? '1px solid var(--border)' : 'none',
+          }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              marginBottom: 7, padding: '2px 8px', borderRadius: 5,
+              background: 'var(--accent-bg)', border: '1px solid var(--accent-border)',
+              fontSize: 11, fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--font-mono)',
             }}>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: 11,
-                color: 'var(--green)', marginBottom: 6,
-                display: 'flex', gap: 8, alignItems: 'center',
-              }}>
-                <span style={{
-                  background: 'var(--green-bg)', border: '1px solid var(--green)22',
-                  borderRadius: 3, padding: '1px 6px',
-                }}>Q{i+1}</span>
-              </div>
-              <textarea
-                value={qa.question}
-                onChange={e => {
-                  const updated = [...content];
-                  updated[i] = { ...updated[i], question: e.target.value };
-                  onContentChange(updated);
-                }}
-                style={{
-                  width: '100%', background: 'transparent',
-                  border: 'none', color: 'var(--text)',
-                  fontFamily: 'var(--font-sans)', fontSize: 14,
-                  fontWeight: 600, resize: 'none',
-                  outline: 'none', marginBottom: 8,
-                  lineHeight: 1.5,
-                }}
-                rows={2}
-              />
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: 11,
-                color: 'var(--amber)', marginBottom: 6,
-              }}>
-                <span style={{
-                  background: 'var(--amber-bg)', border: '1px solid var(--amber)22',
-                  borderRadius: 3, padding: '1px 6px',
-                }}>A</span>
-              </div>
-              <textarea
-                value={qa.answer}
-                onChange={e => {
-                  const updated = [...content];
-                  updated[i] = { ...updated[i], answer: e.target.value };
-                  onContentChange(updated);
-                }}
-                style={{
-                  width: '100%', background: 'transparent',
-                  border: 'none', color: 'var(--text-muted)',
-                  fontFamily: 'var(--font-sans)', fontSize: 13,
-                  resize: 'none', outline: 'none',
-                  lineHeight: 1.6,
-                }}
-                rows={3}
-              />
+              F{i+1}
             </div>
-          ))}
-        </div>
+            <textarea value={qa.question} onChange={e => {
+              const u = [...content]; u[i] = { ...u[i], question: e.target.value }; onContentChange(u);
+            }} style={{
+              width: '100%', background: 'transparent', border: 'none',
+              color: 'var(--text)', fontFamily: 'var(--font-sans)', fontSize: 14,
+              fontWeight: 600, resize: 'none', outline: 'none', marginBottom: 8, lineHeight: 1.5,
+            }} rows={2} />
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              marginBottom: 7, padding: '2px 8px', borderRadius: 5,
+              background: 'var(--amber-bg)', border: '1px solid var(--amber)33',
+              fontSize: 11, fontWeight: 700, color: 'var(--amber)', fontFamily: 'var(--font-mono)',
+            }}>
+              A
+            </div>
+            <textarea value={qa.answer} onChange={e => {
+              const u = [...content]; u[i] = { ...u[i], answer: e.target.value }; onContentChange(u);
+            }} style={{
+              width: '100%', background: 'transparent', border: 'none',
+              color: 'var(--text-muted)', fontFamily: 'var(--font-sans)', fontSize: 13,
+              resize: 'none', outline: 'none', lineHeight: 1.6,
+            }} rows={3} />
+          </div>
+        ))}
       </div>
     );
   }
 
-  // Standard text section
-  const textValue = typeof content === 'string' ? content : '';
-  const charCount = textValue.length;
-
+  const text = typeof content === 'string' ? content : '';
   return (
-    <div style={{
-      background: 'var(--bg-2)', border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-      animation: 'fadeIn 0.4s ease',
-      opacity: sectionLoading ? 0.7 : 1,
-      transition: 'opacity 0.2s',
-    }}>
-      <div style={{
-        padding: '14px 18px', borderBottom: '1px solid var(--border)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        flexWrap: 'wrap', gap: 8,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 16 }}>{icon}</span>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>{title}</span>
-          {sectionLoading && (
-            <span style={{
-              fontFamily: 'var(--font-mono)', fontSize: 11,
-              color: 'var(--green)', animation: 'pulse 1s infinite',
-            }}>
-              {lang === 'de' ? 'lädt…' : 'loading…'}
-            </span>
-          )}
+    <div style={cardStyle}>
+      <div style={headerStyle}>
+        <div style={titleStyle}>
+          <span>{icon}</span>{title}
+          {busy && <span style={{ fontSize: 11, color: 'var(--accent)', fontFamily: 'var(--font-mono)', animation: 'pulse 1s infinite' }}>lädt…</span>}
         </div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: 10,
-            color: 'var(--text-dim)',
-          }}>{charCount} {lang === 'de' ? 'Zeichen' : 'chars'}</span>
-          <CopyButton text={textValue} lang={lang} />
-          {onSimplify && (
-            <ActionButton onClick={handleSimplify} loading={sectionLoading}
-              icon="◈" label={lang === 'de' ? 'Kürzen' : 'Simplify'}
-              color="var(--amber)" borderColor="var(--amber)33" />
-          )}
-          {onRegenerate && (
-            <ActionButton onClick={handleRegen} loading={sectionLoading}
-              icon="↺" label={lang === 'de' ? 'Neu' : 'Regen'}
-              color="var(--green)" borderColor="var(--green)33" />
-          )}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-dim)' }}>{text.length} Zeichen</span>
+          <CopyBtn text={text} />
+          {onSimplify  && <ActionBtn onClick={simplify} loading={busy} icon="◈" label="Kürzen"  color="var(--amber)" />}
+          {onRegenerate && <ActionBtn onClick={regen}    loading={busy} icon="↺" label="Neu"     color="var(--accent)" />}
         </div>
       </div>
-      <textarea
-        ref={textareaRef}
-        value={textValue}
-        onChange={e => onContentChange(e.target.value)}
-        style={{
-          width: '100%', minHeight: 160,
-          background: 'transparent', border: 'none',
-          color: 'var(--text)', fontFamily: 'var(--font-mono)',
-          fontSize: 13, lineHeight: 1.7,
-          padding: '16px 18px', resize: 'vertical',
-          outline: 'none',
-        }}
-      />
+      <textarea value={text} onChange={e => onContentChange(e.target.value)} style={{
+        width: '100%', minHeight: 160, background: 'transparent', border: 'none',
+        color: 'var(--text)', fontFamily: 'var(--font-mono)', fontSize: 13,
+        lineHeight: 1.7, padding: '16px 18px', resize: 'vertical', outline: 'none',
+      }} />
     </div>
   );
 }
