@@ -53,7 +53,7 @@ function CharCounter({ value, max }) {
 
 /* ── Language badge ── */
 const LANGS = [
-  { code: 'de', flag: '🇩🇪', label: 'DE' },
+  { code: 'de', flag: '/flags/de.svg', label: 'DE' },
   { code: 'es', flag: '🇪🇸', label: 'ES' },
   { code: 'en', flag: '🇬🇧', label: 'EN' },
   { code: 'pt', flag: '🇵🇹', label: 'PT' },
