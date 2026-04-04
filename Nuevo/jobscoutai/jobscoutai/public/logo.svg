@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Card base -->
+  <rect x="8" y="8" width="104" height="104" rx="18" fill="#0f0f0f" stroke="#1a1a1a" stroke-width="1"/>
+
+  <!-- Circuit traces - organic L-shapes and curves, not just straight -->
+  <!-- Top-left trace -->
+  <path d="M22 8 L22 22 Q22 28 28 28 L44 28" fill="none" stroke="#00c96e" stroke-width="0.8" opacity="0.35"/>
+  <!-- Top-right trace -->
+  <path d="M90 8 L90 18 Q90 24 84 24 L72 24" fill="none" stroke="#00c96e" stroke-width="0.8" opacity="0.25"/>
+  <!-- Bottom-left trace -->
+  <path d="M35 112 L35 96 Q35 90 41 90 L52 90" fill="none" stroke="#00c96e" stroke-width="0.8" opacity="0.3"/>
+  <!-- Bottom-right trace -->
+  <path d="M82 112 L82 94 Q82 88 76 88 L68 88" fill="none" stroke="#00c96e" stroke-width="0.8" opacity="0.2"/>
+  <!-- Left side trace -->
+  <path d="M8 38 L24 38 Q30 38 30 44 L30 54" fill="none" stroke="#00c96e" stroke-width="0.8" opacity="0.3"/>
+  <!-- Right side trace -->
+  <path d="M112 72 L96 72 Q90 72 90 66 L90 54" fill="none" stroke="#00c96e" stroke-width="0.8" opacity="0.25"/>
+  <!-- Extra diagonal-ish trace bottom-left -->
+  <path d="M8 80 L20 80 Q26 80 26 74 L26 65" fill="none" stroke="#00c96e" stroke-width="0.6" opacity="0.18"/>
+  <!-- Extra trace top -->
+  <path d="M55 8 L55 20 Q55 26 61 26 L70 26" fill="none" stroke="#00c96e" stroke-width="0.6" opacity="0.18"/>
+
+  <!-- Trace endpoint dots -->
+  <circle cx="44" cy="28" r="1.8" fill="#00c96e" opacity="0.5"/>
+  <circle cx="72" cy="24" r="1.8" fill="#00c96e" opacity="0.35"/>
+  <circle cx="52" cy="90" r="1.8" fill="#00c96e" opacity="0.4"/>
+  <circle cx="68" cy="88" r="1.8" fill="#00c96e" opacity="0.3"/>
+  <circle cx="30" cy="54" r="1.8" fill="#00c96e" opacity="0.4"/>
+  <circle cx="90" cy="54" r="1.8" fill="#00c96e" opacity="0.35"/>
+  <circle cx="26" cy="65" r="1.5" fill="#00c96e" opacity="0.25"/>
+  <circle cx="70" cy="26" r="1.5" fill="#00c96e" opacity="0.25"/>
+
+  <!-- Chip pins - top -->
+  <rect x="30" y="4" width="7" height="12" rx="2" fill="#00c96e" opacity="0.75"/>
+  <rect x="47" y="4" width="7" height="12" rx="2" fill="#00c96e" opacity="0.95"/>
+  <rect x="66" y="4" width="7" height="12" rx="2" fill="#00c96e" opacity="0.75"/>
+  <rect x="83" y="4" width="7" height="12" rx="2" fill="#00c96e" opacity="0.5"/>
+  <!-- Chip pins - bottom -->
+  <rect x="30" y="104" width="7" height="12" rx="2" fill="#00c96e" opacity="0.5"/>
+  <rect x="47" y="104" width="7" height="12" rx="2" fill="#00c96e" opacity="0.95"/>
+  <rect x="66" y="104" width="7" height="12" rx="2" fill="#00c96e" opacity="0.7"/>
+  <rect x="83" y="104" width="7" height="12" rx="2" fill="#00c96e" opacity="0.45"/>
+  <!-- Chip pins - left -->
+  <rect x="4" y="32" width="12" height="7" rx="2" fill="#00c96e" opacity="0.55"/>
+  <rect x="4" y="48" width="12" height="7" rx="2" fill="#00c96e" opacity="0.9"/>
+  <rect x="4" y="65" width="12" height="7" rx="2" fill="#00c96e" opacity="0.65"/>
+  <rect x="4" y="81" width="12" height="7" rx="2" fill="#00c96e" opacity="0.4"/>
+  <!-- Chip pins - right -->
+  <rect x="104" y="32" width="12" height="7" rx="2" fill="#00c96e" opacity="0.4"/>
+  <rect x="104" y="48" width="12" height="7" rx="2" fill="#00c96e" opacity="0.9"/>
+  <rect x="104" y="65" width="12" height="7" rx="2" fill="#00c96e" opacity="0.6"/>
+  <rect x="104" y="81" width="12" height="7" rx="2" fill="#00c96e" opacity="0.35"/>
+
+  <!-- Inner chip frame -->
+  <rect x="26" y="26" width="68" height="68" rx="10" fill="#141414" stroke="#00c96e" stroke-width="1" opacity="0.9"/>
+
+  <!-- Corner pads -->
+  <rect x="28" y="28" width="6" height="6" rx="1.5" fill="#00c96e" opacity="0.4"/>
+  <rect x="86" y="28" width="6" height="6" rx="1.5" fill="#00c96e" opacity="0.4"/>
+  <rect x="28" y="86" width="6" height="6" rx="1.5" fill="#00c96e" opacity="0.4"/>
+  <rect x="86" y="86" width="6" height="6" rx="1.5" fill="#00c96e" opacity="0.4"/>
+
+  <!-- JS -->
+  <text x="60" y="72" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="800" font-size="32" fill="#00c96e" letter-spacing="-1">JS</text>
+</svg>
